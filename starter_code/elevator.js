@@ -23,16 +23,40 @@ class Elevator {
 
   update() {
     this.log();
+    this._passengersEnter();
+    this._passengersLeave();
+    this.floor < this.requests[0] ? this.floorUp() : this.floorDown();
+    if (this.floor === this.requests[0]) {
+      this.requests.shift();
+    }
+    if (this.requests.length === 0) {
+      this.stop();
+    }
   }
 
-  _passengersEnter() {}
+  _passengersEnter() {
+    this.waitingList.forEach((elem, index) => {
+      if (elem.originFloor === this.floor) {
+        this.passengers.push(elem);
+        this.waitingList.splice(index, 1);
+        this.requests.push(elem.destinationFloor);
+      }
+    });
+  }
 
-  _passengersLeave() {}
+  _passengersLeave() {
+    this.passengers.forEach((elem, index) => {
+      if (elem.destinationFloor === this.floor) {
+        this.passengers.splice(index, 1);
+        console.log(`${elem.name} has left the elevator`);
+      }
+    });
+  }
 
   floorUp() {
     if (this.floor < this.MAXFLOOR) {
       this.floor++;
-      console.log(this.floor)
+      console.log(this.floor);
     }
   }
 
@@ -43,7 +67,8 @@ class Elevator {
   }
 
   call(person) {
-
+    this.requests.push(person.originFloor);
+    this.waitingList.push(person);
   }
 
   log() {
